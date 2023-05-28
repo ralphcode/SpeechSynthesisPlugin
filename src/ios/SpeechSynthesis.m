@@ -105,7 +105,10 @@
     AVAudioSessionCategory category = [audioSession category];
     if(![category isEqualToString:AVAudioSessionCategoryPlayback] &&
        ![category isEqualToString:AVAudioSessionCategoryPlayAndRecord]) {
-        [audioSession setActive:NO withOptions:0 error:nil];
+        NSError *error = nil;
+        if (![audioSession setActive:NO withOptions:0 error:&error]) {
+            NSLog(@"[ss] Error deactivating audio session: %@", error);
+        }
         
         if([category isEqualToString:AVAudioSessionCategoryRecord]) {
             category = AVAudioSessionCategoryPlayAndRecord;
@@ -114,7 +117,18 @@
         }
 
         NSUInteger options = [audioSession categoryOptions] | AVAudioSessionCategoryOptionDuckOthers;
-        [audioSession setCategory:category withOptions:options error:nil];
+        if (![audioSession setCategory:category withOptions:options error:&error]) {
+            NSLog(@"Error setting audio session category: %@", error);
+        }
+    }
+    
+    // Always play via speaker > this will not be good if the user wants to use a headset?
+    NSError *error = nil;
+    [audioSession setActive:YES error:&error];
+    if (error) {
+        NSLog(@"Error activating AVAudioSession: %@", error);
+    } else if (![audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error]) {
+        NSLog(@"Could not override audio output route: %@", error);
     }
 
     if (!lang || (id)lang == [NSNull null]) {
@@ -144,7 +158,7 @@
     utterance.volume = volume;
     utterance.pitchMultiplier = pitch;
 
-    if(voice) {
+    if(voice && voice != NULL) {
         NSString *identifier = [voice valueForKey:@"voiceURI"];
         
         utterance.voice = [AVSpeechSynthesisVoice voiceWithIdentifier:identifier];
