@@ -17,7 +17,7 @@
 #import "SpeechSynthesis.h"
 #import "NSMutableArray+QueueAdditions.h"
 
-#if 0
+#if 1
 #define DBG(a)          NSLog(a)
 #define DBG1(a, b)      NSLog(a, b)
 #define DBG2(a, b, c)   NSLog(a, b, c)
@@ -28,6 +28,8 @@
 #endif
 
 @implementation SpeechSynthesis
+
+const NSNotificationName SpeechSynthesisNotificationSend = @"SPEECHSYNTHESIS.STATECHANGE";
 
 - (void)pluginInitialize {
     DBG(@"[ss] pluginInitialize()");
@@ -82,15 +84,18 @@
             } else {
                 category = AVAudioSessionCategoryPlayback;
             }
-            
-            [audioSession setCategory:category error:nil];
+            if ([audioSession category] != category) {
+                [audioSession setCategory:category error:nil];
+            }
         }
     }
+    
+    // We speak AVAudioSessionModeSpokenAudio
+    // [audioSession setMode:AVAudioSessionModeSpokenAudio error:nil];
 }
 
 - (void)speak:(CDVInvokedUrlCommand*)command {
     NSDictionary* options = [command.arguments objectAtIndex:0];
-    
     NSString* text = [options objectForKey:@"text"];
 
     DBG1(@"[ss] speak(%@)", text);
@@ -163,7 +168,8 @@
         
         utterance.voice = [AVSpeechSynthesisVoice voiceWithIdentifier:identifier];
     }
-
+    
+    [self sendEvent:@"starting"];
     [synthesizer speakUtterance:utterance];
 }
 
@@ -232,7 +238,11 @@
         }
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
-    DBG1(@"[ss] sendEvent(%@) complete", eventType);
+    // DBG1(@"[ss] sendEvent(%@) complete", eventType);
+    
+    // Broadcast to the app;
+    NSDictionary *stateInfo = @{@"state": eventType};
+    [[NSNotificationCenter defaultCenter] postNotificationName:SpeechSynthesisNotificationSend object:nil userInfo:stateInfo]; // starting, start, end, pause, resume
 }
 
 -(void) sendErrorEvent:(NSString *) errorCode
