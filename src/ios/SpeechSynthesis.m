@@ -163,7 +163,7 @@ const NSNotificationName SpeechSynthesisNotificationSend = @"SPEECHSYNTHESIS.STA
     utterance.volume = volume;
     utterance.pitchMultiplier = pitch;
 
-    if(voice && voice != NULL) {
+    if(voice && voice != [NSNull null]) {
         NSString *identifier = [voice valueForKey:@"voiceURI"];
         
         utterance.voice = [AVSpeechSynthesisVoice voiceWithIdentifier:identifier];
