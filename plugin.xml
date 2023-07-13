@@ -28,7 +28,7 @@
       <clobbers target="SpeechSynthesisEvent"/>
     </js-module>
     <js-module src="www/SpeechSynthesisEventError.js" name="SpeechSynthesisEventError">
-      <clobbers target="SpeechSynthesisErrorEvent"/>
+      <clobbers target="window.SpeechSynthesisErrorEvent"/>
     </js-module>
     <js-module src="www/SpeechSynthesisVoice.js" name="SpeechSynthesisVoice">
       <clobbers target="SpeechSynthesisVoice"/>
@@ -54,7 +54,7 @@
       <clobbers target="SpeechSynthesisEvent"/>
     </js-module>
     <js-module src="www/SpeechSynthesisEventError.js" name="SpeechSynthesisEventError">
-      <clobbers target="SpeechSynthesisErrorEvent"/>
+      <clobbers target="window.SpeechSynthesisErrorEvent"/>
     </js-module>
     <js-module src="www/SpeechSynthesisVoice.js" name="SpeechSynthesisVoice">
       <clobbers target="SpeechSynthesisVoice"/>
