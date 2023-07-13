@@ -1,4 +1,3 @@
-cordova.define("phonegap-plugin-speech-synthesis.SpeechSynthesisEventError", function(require, exports, module) { 
 var SpeechSynthesisErrorEvent = function () {
     SpeechSynthesisEvent.call(this);
 
@@ -37,4 +36,3 @@ SpeechSynthesisErrorEvent._errorCodes = [
 ];
 
 module.exports = SpeechSynthesisErrorEvent;
-});
