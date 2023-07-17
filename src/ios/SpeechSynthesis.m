@@ -57,18 +57,25 @@ const NSNotificationName SpeechSynthesisNotificationSend = @"SPEECHSYNTHESIS.STA
         NSLog(@"[ss] AVAudioSessionRouteChangeReasonNewDeviceAvailable");
         
         route = audioSession.currentRoute;
-        port = route.inputs[0];
-        NSLog(@"[ss] New device is %@", port.portType);
+        if (route.inputs.count > 0) {
+            port = route.inputs[0];
+            NSLog(@"[ss] New device is %@", port.portType);
+        } else {
+            NSLog(@"[ss] device removed");
+        }
     } else if ([reason unsignedIntegerValue] == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
         NSLog(@"[ss] AVAudioSessionRouteChangeReasonOldDeviceUnavailable");
         
         route = [notification.userInfo objectForKey:AVAudioSessionRouteChangePreviousRouteKey];
-        port = route.inputs[0];
-        NSLog(@"[ss] Removed device %@", port.portType);
-        
-        route = audioSession.currentRoute;
-        port = route.inputs[0];
-        NSLog(@"[ss] Now using device %@", port.portType);
+        if (route.inputs.count > 0) {
+            port = route.inputs[0];
+            NSLog(@"[ss] Removed device %@", port.portType);
+            route = audioSession.currentRoute;
+            port = route.inputs[0];
+            NSLog(@"[ss] Now using device %@", port.portType);
+        } else {
+            NSLog(@"[ss] device removed");
+        }
     } else if ([reason unsignedIntegerValue] == AVAudioSessionRouteChangeReasonCategoryChange) {
         NSLog(@"[ss] AVAudioSessionRouteChangeReasonCategoryChange");
 
